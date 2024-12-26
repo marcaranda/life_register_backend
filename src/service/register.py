@@ -16,8 +16,9 @@ def serialize_document(document):
 
 @router.get("/registedDay")
 async def get_registed_day(date: str):
+  userId = 1
   try:
-    documentDB = collection.find_one({"date": date})
+    documentDB = collection.find_one({"date": date, "userId": userId})
     if documentDB:
       return serialize_document(documentDB)
     else:
@@ -27,8 +28,9 @@ async def get_registed_day(date: str):
 
 @router.get("/registedDayMeals")
 async def get_registed_day_meals(date: str):
+  userId = 1
   try:
-    documentDB = collection.find_one({"date": date})
+    documentDB = collection.find_one({"date": date, "userId": userId})
     if documentDB and "meals" in documentDB:
       return documentDB["meals"]
     else:
@@ -38,8 +40,9 @@ async def get_registed_day_meals(date: str):
 
 @router.get("/registedDayWorkouts")
 async def get_registed_day_workouts(date: str):
+  userId = 1
   try:
-    documentDB = collection.find_one({"date": date})
+    documentDB = collection.find_one({"date": date, "userId": userId})
     if documentDB and "workouts" in documentDB:
       return documentDB["workouts"]
     else:
