@@ -14,6 +14,39 @@ router = APIRouter()
 def serialize_document(document):
   return {**document, "_id": str(document["_id"])}
 
+@router.get("/registedDay")
+async def get_registed_day(date: str):
+  try:
+    documentDB = collection.find_one({"date": date})
+    if documentDB:
+      return serialize_document(documentDB)
+    else:
+      return {"message": "No hay registros para este día"}
+  except:
+    raise HTTPException(status_code=500, detail="Error al obtener los registros")
+
+@router.get("/registedDayMeals")
+async def get_registed_day_meals(date: str):
+  try:
+    documentDB = collection.find_one({"date": date})
+    if documentDB and "meals" in documentDB:
+      return documentDB["meals"]
+    else:
+      return {"message": "No hay comidas registradas para este día"}
+  except:
+    raise HTTPException(status_code=500, detail="Error al obtener las comidas registradas")
+
+@router.get("/registedDayWorkouts")
+async def get_registed_day_workouts(date: str):
+  try:
+    documentDB = collection.find_one({"date": date})
+    if documentDB and "workouts" in documentDB:
+      return documentDB["workouts"]
+    else:
+      return {"message": "No hay ejercicios registrados para este día"}
+  except:
+    raise HTTPException(status_code=500, detail="Error al obtener los ejercicios registrados")
+
 @router.put("/registerMeal")
 async def register_meal(meal: Meal):
   try:
