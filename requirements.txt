@@ -7,10 +7,5 @@ pydantic-settings==2.6.1
 pydantic_core==2.27.1
 pymongo==4.10.1
 pytest==8.3.3
-python-apt==2.4.0+ubuntu4
-python-dateutil==2.9.0.post0
-python-debian==0.1.43+ubuntu1.1
-python-dotenv==1.0.1
-python-multipart==0.0.17
 requests==2.25.1
 uvicorn==0.32.1
