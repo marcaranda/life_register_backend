@@ -1,5 +1,10 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List
+
+class User(BaseModel):
+  name: str
+  email: str
+  password: str
 
 class MealItem(BaseModel):
   name: str
@@ -13,7 +18,6 @@ class Meal(BaseModel):
 class WorkoutItem(BaseModel):
   name : str
   type : str
-  customType : str
   url : str
   duration : str
   intensity : str
