@@ -15,7 +15,7 @@ app.add_middleware(
 )
 
 # Incluir rutas desde routes.py
-app.include_router(register_router, tags=["Register"])
+app.include_router(register_router, tags=["Register"]) 
 
 # Handler requerido por Vercel
 def handler(req, context):
