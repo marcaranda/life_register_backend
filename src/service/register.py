@@ -14,7 +14,7 @@ router = APIRouter()
 def serialize_document(document):
   return {**document, "_id": str(document["_id"])}
 
-@router.get("/registedDay")
+@router.get("/registedDay") 
 async def get_registed_day(date: str):
   userId = 1
   try:
