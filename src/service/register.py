@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from typing import Optional
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from src.model.model import Meal, Workout
+from src.model import utils
 
 client = MongoClient("mongodb+srv://tfgmarcaranda:liferegister@life-register.80mgt.mongodb.net/?retryWrites=true&w=majority&appName=life-register")
 db = client["liferegister"]
@@ -15,10 +17,12 @@ def serialize_document(document):
   return {**document, "_id": str(document["_id"])}
 
 @router.get("/registedDay") 
-async def get_registed_day(date: str):
-  userId = 1
+async def get_registed_day(date: str, email: Optional[str] = None, userEmail: str = Depends(utils.get_current_userEmail)):
+  if not email:
+    email = userEmail
+  
   try:
-    documentDB = collection.find_one({"date": date, "userId": userId})
+    documentDB = collection.find_one({"date": date, "userEmail": email})
     if documentDB:
       return serialize_document(documentDB)
     else:
@@ -27,10 +31,12 @@ async def get_registed_day(date: str):
     raise HTTPException(status_code=500, detail="Error al obtener los registros")
 
 @router.get("/registedDayMeals")
-async def get_registed_day_meals(date: str):
-  userId = 1
+async def get_registed_day_meals(date: str, email: str, userEmail: str = Depends(utils.get_current_userEmail)):
+  if not email:
+    email = userEmail
+  
   try:
-    documentDB = collection.find_one({"date": date, "userId": userId})
+    documentDB = collection.find_one({"date": date, "userEmail": email})
     if documentDB and "meals" in documentDB:
       return documentDB["meals"]
     else:
@@ -39,10 +45,12 @@ async def get_registed_day_meals(date: str):
     raise HTTPException(status_code=500, detail="Error al obtener las comidas registradas")
 
 @router.get("/registedDayWorkouts")
-async def get_registed_day_workouts(date: str):
-  userId = 1
+async def get_registed_day_workouts(date: str, email: str, userEmail: str = Depends(utils.get_current_userEmail)):
+  if not email:
+    email = userEmail
+  
   try:
-    documentDB = collection.find_one({"date": date, "userId": userId})
+    documentDB = collection.find_one({"date": date, "userEmail": email})
     if documentDB and "workouts" in documentDB:
       return documentDB["workouts"]
     else:
@@ -51,12 +59,12 @@ async def get_registed_day_workouts(date: str):
     raise HTTPException(status_code=500, detail="Error al obtener los ejercicios registrados")
 
 @router.put("/registerMeal")
-async def register_meal(meal: Meal):
+async def register_meal(meal: Meal, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     meal_check(meal)
 
     meal_dict = meal.dict(exclude={"meal"})
-    meal_dict["userId"] = 1
+    meal_dict["userEmail"] = userEmail
 
     documentDB = collection.find_one({"date": meal.date})
     if documentDB:
@@ -79,12 +87,12 @@ async def register_meal(meal: Meal):
     raise HTTPException(status_code=400, detail="Ya existe una comida con ese nombre")
     
 @router.put("/registerWorkout")
-async def register_workout(workout: Workout):
+async def register_workout(workout: Workout, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     workout_check(workout)
 
     workout_dict = workout.dict(exclude={"workout"})
-    workout_dict["userId"] = 1
+    workout_dict["userEmail"] = userEmail
 
     documentDB = collection.find_one({"date": workout.date})
     if documentDB:
