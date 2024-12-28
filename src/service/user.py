@@ -31,20 +31,21 @@ async def get_user(email: str):
 async def get_users_name(name: str, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     documentsDB = collection.find({"name": {"$regex": f"^{name}", "$options": "i"}})
-    users = [{"user": {"name": doc["name"], "email": doc["email"]}} for doc in documentsDB if doc["email"] != userEmail]
+    users = [{"name": doc["name"], "email": doc["email"]} for doc in documentsDB if doc["email"] != userEmail]
     return users
   except:
     raise HTTPException(status_code=500, detail="Error al obtener los usuarios")
 
 @router.post("/registerUser")
-def register_user(user: User):
+async def register_user(user: User):
   try:
     user_dict = user.dict(exclude={"password"})
     user_dict["password"] = utils.get_password_hash(user.password)
 
     result = collection.insert_one(user_dict)
     if result.acknowledged:
-      return {"message": "Usuario registrado correctamente"}
+      token = utils.create_access_token({"email": str(user.email)})
+      return {"token": token, "token_type": "bearer"}
     else:
       raise HTTPException(status_code=500, detail="Error al registrar la comida")
   except DuplicateKeyError:
@@ -63,3 +64,24 @@ async def login(formData: OAuth2PasswordRequestForm = Depends()):
       return {"message": "Usuario o contraseña incorrectos"}
   except:
     raise HTTPException(status_code=500, detail="Error al iniciar sesión")
+  
+@router.get("/friends/list")
+async def get_friends(userEmail: str = Depends(utils.get_current_userEmail)):
+  try:
+    documentDB = collection.find_one({"email": userEmail})
+    if documentDB and "friends" in documentDB:
+      return documentDB["friends"]
+    else:
+      return {"message": "No tienes amigos"}
+  except:
+    raise HTTPException(status_code=500, detail="Error al obtener los amigos")
+  
+async def new_friendship(email: str, userEmail: str):
+  try:
+    result1 = collection.update_one({"email": email}, {"$push": {"friends": userEmail}})
+    result2 = collection.update_one({"email": userEmail}, {"$push": {"friends": email}})
+
+    if result1.acknowledged and result2.acknowledged:
+      return {"message": "Amistad aceptada"}
+  except:
+    raise HTTPException(status_code=500, detail="Error al enviar la solicitud")
