@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import Optional
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from src.model.model import Meal, Workout
-from src.model import utils
+from src.model.model import Meal, Workout, StravaUrl
+from src.model import utils, strava
 
 client = MongoClient("mongodb+srv://tfgmarcaranda:liferegister@life-register.80mgt.mongodb.net/?retryWrites=true&w=majority&appName=life-register")
 db = client["liferegister"]
@@ -58,7 +58,7 @@ async def get_registed_day_workouts(date: str, email: str, userEmail: str = Depe
   except:
     raise HTTPException(status_code=500, detail="Error al obtener los ejercicios registrados")
 
-@router.put("/registerMeal")
+@router.put("/register/meal")
 async def register_meal(meal: Meal, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     meal_check(meal)
@@ -86,7 +86,7 @@ async def register_meal(meal: Meal, userEmail: str = Depends(utils.get_current_u
   except DuplicateKeyError:
     raise HTTPException(status_code=400, detail="Ya existe una comida con ese nombre")
     
-@router.put("/registerWorkout")
+@router.put("/register/workout")
 async def register_workout(workout: Workout, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     workout_check(workout)
@@ -113,6 +113,14 @@ async def register_workout(workout: Workout, userEmail: str = Depends(utils.get_
       raise HTTPException(status_code=500, detail="Error al registrar el ejercicio")
   except DuplicateKeyError:
     raise HTTPException(status_code=400, detail="Ya existe un ejercicio con ese nombre")
+  
+@router.put("/register/strava")
+def get_strava_data(stravaUrl: StravaUrl):
+  try:
+    stravaData = strava.get_url_data(stravaUrl.url, stravaUrl.code)
+    return stravaData
+  except:
+    raise HTTPException(status_code=500, detail="Error al obtener los datos de Strava")
 
 def meal_check(meal):
   if not meal.date:

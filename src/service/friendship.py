@@ -44,7 +44,7 @@ async def request_friend(email: str, userEmail: str = Depends(utils.get_current_
 async def accept_friend(email: str, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     result = collection.update_one({"email": userEmail, "userEmail": email}, {"$set": {"status": "accepted"}})
-    resultUser = await new_friendship(email, userEmail)
+    await new_friendship(email, userEmail)
     if result.acknowledged:
       return {"message": "Amistad aceptada"}
     else:
