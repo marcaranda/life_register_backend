@@ -1,5 +1,4 @@
 import re, requests
-import json
 
 def get_url_data(url, code):
     if "strava.com" in url:
@@ -17,13 +16,14 @@ def get_url_data(url, code):
             "name" : stravaJson["name"],
             "distance" : stravaJson["distance"],
             "moving_time" : stravaJson["moving_time"],
+            "type" : stravaJson["type"],
             "id" : stravaJson["id"],
             "start_date_local" : stravaJson["start_date_local"],
-            "calories" : stravaJson.get("calories", 0),
+            "calories" : stravaJson["calories"],
+            "start_date" : stravaJson["start_date"],
+            "average_speed" : stravaJson["average_speed"],
+            "splits_metric" : stravaJson["splits_metric"],
         }
-
-        with open("strava.json", "w") as file:
-            json.dump(stravaJson, file)
 
         return stravaData
     
