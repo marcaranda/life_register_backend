@@ -8,10 +8,10 @@ def get_url_data(url, code):
         
         activity_url = f"https://www.strava.com/api/v3/activities/{id}"
         headers = {'Authorization': f'Bearer {token}'}
-        print("1")
+        
         response = requests.get(activity_url, headers=headers)
         response.raise_for_status()
-        print("2")
+        
         stravaJson = response.json()
         stravaData = {
             "name" : stravaJson["name"],
@@ -22,7 +22,6 @@ def get_url_data(url, code):
             "calories" : stravaJson.get("calories", 0),
         }
 
-        print(stravaJson)
         with open("strava.json", "w") as file:
             json.dump(stravaJson, file)
 
@@ -49,6 +48,6 @@ def get_strava_token(code):
         'code': code,
         'grant_type': 'authorization_code'
     })
-    print(response.json())
+
     response.raise_for_status()
     return response.json()['access_token']
