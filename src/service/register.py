@@ -58,10 +58,6 @@ async def get_registed_day_workouts(date: str, email: str, userEmail: str = Depe
   except:
     raise HTTPException(status_code=500, detail="Error al obtener los ejercicios registrados")
   
-@router.put("/registerPrueba")
-async def prueba(meal: Meal):
-  macros = await foodapi.get_meal_macros(meal.meal)
-
 @router.put("/register/meal")
 async def register_meal(meal: Meal, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
