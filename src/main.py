@@ -24,3 +24,11 @@ app.include_router(friendship_router, tags=["Friendship"])
 # Handler requerido por Vercel
 def handler(req, context):
     return app
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}
+
+@app.get("/favicon.ico")
+def favicon():
+    return {"message": "This is the favicon placeholder"}
