@@ -26,3 +26,7 @@ class WorkoutItem(BaseModel):
 class Workout(BaseModel):
   date: str
   workout : WorkoutItem
+
+class StravaUrl(BaseModel):
+  url: str
+  code: str
