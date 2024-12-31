@@ -7,3 +7,4 @@ src/model/__pycache__/utils.cpython-310.pyc
 src/service/__pycache__/friendship.cpython-310.pyc
 src/model/__pycache__/strava.cpython-310.pyc
 strava.json
+src/model/__pycache__/foodapi.cpython-310.pyc

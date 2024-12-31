@@ -3,7 +3,7 @@ from typing import Optional
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from src.model.model import Meal, Workout, StravaUrl
-from src.model import utils, strava
+from src.model import utils, strava, foodapi
 
 client = MongoClient("mongodb+srv://tfgmarcaranda:liferegister@life-register.80mgt.mongodb.net/?retryWrites=true&w=majority&appName=life-register")
 db = client["liferegister"]
@@ -57,26 +57,28 @@ async def get_registed_day_workouts(date: str, email: str, userEmail: str = Depe
       return {"message": "No hay ejercicios registrados para este día"}
   except:
     raise HTTPException(status_code=500, detail="Error al obtener los ejercicios registrados")
+  
+@router.put("/registerPrueba")
+async def prueba(meal: Meal):
+  macros = await foodapi.get_meal_macros(meal.meal)
 
 @router.put("/register/meal")
 async def register_meal(meal: Meal, userEmail: str = Depends(utils.get_current_userEmail)):
   try:
     meal_check(meal)
 
-    meal_dict = meal.dict(exclude={"meal"})
-    meal_dict["userEmail"] = userEmail
-
     documentDB = collection.find_one({"date": meal.date})
     if documentDB:
       if "meals" in documentDB:
         mealDB = documentDB["meals"]
-        newMealDB = meal_db_refactor(meal.dict(), mealDB)
+        newMealDB = await meal_db_refactor(meal, mealDB)
       else:
-        newMealDB = meal_db_refactor(meal.dict(), None)
+        newMealDB = await meal_db_refactor(meal, None)
       result = collection.update_one({"date": meal.date}, {"$set": {"meals": newMealDB}})
     else:
-      newMealDB = meal_db_refactor(meal.dict(), None)
-      meal_dict["meals"] = newMealDB
+      meal_dict = meal.dict(exclude={"meal"})
+      meal_dict["userEmail"] = userEmail
+      meal_dict["meals"] = await meal_db_refactor(meal, None)
       result = collection.insert_one(meal_dict)
         
     if result.acknowledged:
@@ -126,16 +128,24 @@ def meal_check(meal):
   if not meal.date:
     raise HTTPException(status_code=400, detail="La fecha de la comida es obligatoria")
   
-def meal_db_refactor(meal, mealDB):
+async def meal_db_refactor(meal, mealDB):
+  macros = await foodapi.get_meal_macros(meal.meal)
+
+  meal_dict = meal.dict()
+  newMeal = {
+    "meal": meal_dict["meal"],
+    "macros": macros
+  }
+
   if mealDB is not None:
     index = len(mealDB) + 1
     meal_index = f"meal-{index}"
-    mealDB.append({meal_index: meal["meal"]})
+    mealDB.append({meal_index: newMeal})
     return mealDB
   else:
     index = 1
     meal_index = f"meal-{index}"
-    return [{meal_index: meal["meal"]}]
+    return [{meal_index: newMeal}]
   
 def workout_check(workout):
   if not workout.date:
