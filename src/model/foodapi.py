@@ -19,16 +19,16 @@ async def get_meal_macros(meal):
   data = response.json()
 
   macros = {
-    "Calorías": f"{data['totalNutrients']['ENERC_KCAL']['quantity']} {data['totalNutrients']['ENERC_KCAL']['unit']}",
-    "Grasas": {
+    "calorias": f"{data['totalNutrients']['ENERC_KCAL']['quantity']} {data['totalNutrients']['ENERC_KCAL']['unit']}",
+    "grasas": {
       "Grasas totales": f"{data['totalNutrients']['FAT']['quantity']} {data['totalNutrients']['FAT']['unit']}",
       "Grasas saturadas": f"{data['totalNutrients']['FASAT']['quantity']} {data['totalNutrients']['FASAT']['unit']}",
     },
-    "Carbohidratos": {
+    "carbohidratos": {
       "Carbohidratos totales": f"{data['totalNutrients']['CHOCDF']['quantity']} {data['totalNutrients']['CHOCDF']['unit']}",
       "Azúcares": f"{data['totalNutrients']['SUGAR']['quantity']} {data['totalNutrients']['SUGAR']['unit']}",
     },
-    "Proteínas": f"{data['totalNutrients']['PROCNT']['quantity']} {data['totalNutrients']['PROCNT']['unit']}",
+    "proteinas": f"{data['totalNutrients']['PROCNT']['quantity']} {data['totalNutrients']['PROCNT']['unit']}",
   }
 
   return macros
