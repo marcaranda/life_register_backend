@@ -18,7 +18,7 @@ client = MongoClient("mongodb+srv://tfgmarcaranda:liferegister@life-register.80m
 db = client["liferegister"]
 collection = db["user"]
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
 
 # Funciones de autenticación
 def verify_password(plain_password: str, hashed_password: str) -> bool:
