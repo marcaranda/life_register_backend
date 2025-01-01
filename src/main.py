@@ -10,7 +10,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Tu URL del frontend
+    allow_origins=["https://life-register-frontend.vercel.app/"],  # Tu URL del frontend
     allow_credentials=True,
     allow_methods=["*"],  # Permite todos los métodos HTTP
     allow_headers=["*"],  # Permite todos los encabezados
