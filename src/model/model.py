@@ -10,6 +10,7 @@ class MealItem(BaseModel):
   name: str
   quantity: int
   unit: str
+  saveMacros: bool
 
 class Meal(BaseModel):
   date: str
